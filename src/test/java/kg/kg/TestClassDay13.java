@@ -4,6 +4,7 @@ package kg.kg;
 import kg.com.Day12;
 import kg.com.Day13;
 import kg.com.FileLoader;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,6 +13,26 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestClassDay13 {
+
+    List<List<Integer>> two55 = new ArrayList<>();
+    List<List<Integer>> two44 = new ArrayList<>();
+    List<List<Integer>> two54 = new ArrayList<>();
+
+    @BeforeEach
+    public void init() {
+
+        for(int i = 0; i < 5; i++){
+            two55.add(List.of(0,1,2,3,4));
+        }
+
+        for(int i = 0; i < 4; i++){
+            two44.add(List.of(0,1,2,3));
+        }
+
+        for(int i = 0; i < 5; i++){
+            two54.add(List.of(0,1,2,3));
+        }
+    }
 
     @Test
     public void day13Part1_Test_1() {
@@ -27,10 +48,13 @@ public class TestClassDay13 {
 
     @Test
     public void findMiddleTest() {
-        List<List<Integer>> twoD = new ArrayList<>();
-        for(int i = 0; i < 5; i++){
-            twoD.add(List.of(0,1,2,3,4));
-        }
-        assertEquals(Day13.findMiddle(twoD), 3);
+        assertEquals(Day13.findMiddle(two55), 3);
+        assertEquals(Day13.findMiddle(two44), 2);
+        assertEquals(Day13.findMiddle(two54), 3);
+    }
+
+    @Test
+    public void pairListTest() {
+        assertEquals(Day13.pairList(1, 7), 0);
     }
 }
