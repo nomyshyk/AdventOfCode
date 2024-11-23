@@ -43,7 +43,13 @@ public class TestClassDay13 {
     @Test
     public void day13Part1_Test_2() {
         List<String> strList = FileLoader.inputLines("input_day13_p2_1.txt");
-        assertEquals(Day13.executePart1(strList), 6981);
+        assertEquals(Day13.executePart1(strList), 37718);
+    }
+
+    @Test
+    public void day13Part1_Test_3() {
+        List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
+        assertEquals(Day13.executePart1(strList), 4);
     }
 
     @Test

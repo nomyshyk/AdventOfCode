@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Map;
 
 // Parse matrix
 // One vertical and one horizontal
@@ -18,12 +18,18 @@ public class Day13 {
     public static Long executePart1(List<String> strList) {
         clear();
         inputList = parse2DList(strList);
-        System.out.println(inputList);
+        //System.out.println(inputList);
+        List<Integer> maxResults = new ArrayList<>();
+        List<List<List<Integer>>> originalAndRotated = new ArrayList<>(inputList);
+        for (List<List<Integer>> list: inputList){
+            List<List<Integer>> rotatedMatrix = rotateMatrix(list);
 
-        for (List<List<Integer>> list: inputList) {
-            //int middle = findMiddle(list);
+            originalAndRotated.add(rotatedMatrix);
+        }
 
-            rotateMatrix(list);
+        //
+        int cnt = 0;
+        for (List<List<Integer>> list: originalAndRotated) {
 
             int curMirrorSize = 0;
             for (int i = 0; i < list.size(); i++){
@@ -38,12 +44,18 @@ public class Day13 {
                     mirrored = true;
                 }
                 if (mirrored) {
-                    curMirrorSize = Math.max (curMirrorSize, list.size() - pairs.get(0).getLeft());
+                    curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
                     System.out.println("wow that was a mirror! and size is " + curMirrorSize);
                 }
             }
+            maxResults.add(curMirrorSize);
+            cnt++;
         }
-        return 0L;
+        System.out.println("Results are here, size is=" + (maxResults.size()/2));
+        System.out.println(maxResults);
+        //int middle = originalAndRotated.size() / 2;
+
+        return countResult(maxResults);
     }
 
     static List<List<List<Integer>>> parse2DList(List<String> strList) {
@@ -75,7 +87,7 @@ public class Day13 {
                 return false;
             }
         }
-        System.out.println(lineA + " and " + lineB + " are equal");
+        //System.out.println(lineA + " and " + lineB + " are equal");
         return true;
     }
 
@@ -95,10 +107,6 @@ public class Day13 {
         return pairs;
     }
 
-    public List<Integer> generateIndexesToCheck(int middle, int length) {
-        return null;
-    }
-
     public static List<List<Integer>> rotateMatrix(List<List<Integer>> matrix) {
         List<List<Integer>> rotatedMatrix = new ArrayList<>();
         for(int i = 0; i < matrix.get(1).size(); i++){
@@ -108,9 +116,26 @@ public class Day13 {
             }
             rotatedMatrix.add(ints);
         }
-        System.out.println("rotated");
-        System.out.println(rotatedMatrix);
+        //System.out.println("rotated");
+        //System.out.println(rotatedMatrix);
         return rotatedMatrix;
+    }
+
+    public static long countResult(List<Integer> maxValues) {
+        int middle = maxValues.size()/2;
+        long totalHoriz = 0L;
+        long totalVert = 0L;
+        for (int i=0; i<maxValues.size()/2; i++){
+            long rows = maxValues.get(i);
+            long columns = maxValues.get(i+middle);
+            System.out.println(rows + " vs " + columns);
+            if (rows > columns) {
+                totalHoriz += rows;
+            } else {
+                totalVert += columns;
+            };
+        }
+        return totalHoriz*100 + totalVert;
     }
 
     static void clear() {
