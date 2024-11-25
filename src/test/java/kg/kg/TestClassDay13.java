@@ -49,18 +49,44 @@ public class TestClassDay13 {
     @Test
     public void day13Part1_Test_3() {
         List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
-        assertEquals(Day13.executePart1(strList), 4);
+        assertEquals(Day13.executePart1(strList), 400);
     }
 
     @Test
-    public void findMiddleTest() {
-        assertEquals(Day13.findMiddle(two55), 3);
-        assertEquals(Day13.findMiddle(two44), 2);
-        assertEquals(Day13.findMiddle(two54), 3);
+    public void day13Part2_Test_1() {
+        List<String> strList = FileLoader.inputLines("input_day13_p1_1.txt");
+        assertEquals(Day13.executePart2(strList), 400L);
+    }
+
+    @Test
+    public void day13Part2_Test_2() {
+        List<String> strList = FileLoader.inputLines("input_day13_p2_1.txt");
+        assertEquals(Day13.executePart2(strList), 37718);
     }
 
     @Test
     public void pairListTest() {
         assertEquals(Day13.pairList(1, 7), 0);
+    }
+
+    @Test
+    public void checkBitwiseEqualTest() {
+        assertEquals(true, Day13.isBitwiseEqual(120, 120));
+        assertEquals(false, Day13.isBitwiseEqual(15, 8));
+    }
+
+    @Test
+    public void ifPowerOf2() {
+        assertEquals(true, Day13.isPowerOfTwo(0));
+    }
+
+    @Test
+    public void updateGivenPosTest() {
+        assertEquals(1, Day13.updateGivenPositionOfInt(2, 1));
+    }
+
+    @Test
+    public void listOfCombinationsTest() {
+        assertEquals(1, Day13.listOfCombinations(12, 8 ));
     }
 }

@@ -4,7 +4,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 // Parse matrix
 // One vertical and one horizontal
@@ -14,53 +13,93 @@ import java.util.Map;
 public class Day13 {
 
     static List<List<List<Integer>>> inputList = new ArrayList<>();
+    static int maxPos = 0;
 
     public static Long executePart1(List<String> strList) {
+
         clear();
         inputList = parse2DList(strList);
-        //System.out.println(inputList);
-        List<Integer> maxResults = new ArrayList<>();
-        List<List<List<Integer>>> originalAndRotated = new ArrayList<>(inputList);
+
+        int resultHor = 0;
+        int resultVert = 0;
+
         for (List<List<Integer>> list: inputList){
-            List<List<Integer>> rotatedMatrix = rotateMatrix(list);
-
-            originalAndRotated.add(rotatedMatrix);
-        }
-
-        //
-        int cnt = 0;
-        for (List<List<Integer>> list: originalAndRotated) {
-
-            int curMirrorSize = 0;
-            for (int i = 0; i < list.size(); i++){
-                List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
-                boolean mirrored = false;
-                for (Pair<Integer, Integer> pair : pairs) {
-                    boolean linesAreSimilar = isArraysEqual(list.get(pair.getLeft()), list.get(pair.getRight()));
-                    if(!linesAreSimilar) {
-                        mirrored = false;
-                        break;
-                    }
-                    mirrored = true;
-                }
-                if (mirrored) {
-                    curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
-                    System.out.println("wow that was a mirror! and size is " + curMirrorSize);
-                }
+            List<Integer> bitwiseList = bitwiseList(list);
+            int val = countLineOnTop(bitwiseList);
+            resultHor += val;
+            System.out.println("resHor=" + resultHor);
+            if (val > 0) {
+                continue;
             }
-            maxResults.add(curMirrorSize);
-            cnt++;
-        }
-        System.out.println("Results are here, size is=" + (maxResults.size()/2));
-        System.out.println(maxResults);
-        //int middle = originalAndRotated.size() / 2;
 
-        return countResult(maxResults);
+            List<List<Integer>> rotatedMatrix = rotateMatrix(list);
+            resultVert += countLineOnTop(bitwiseList(rotatedMatrix));
+            System.out.println("resultVert=" + resultVert);
+        }
+
+
+        return (resultHor*100L + resultVert);
+    }
+
+    public static Long executePart2(List<String> strList) {
+
+        clear();
+        inputList = parse2DList(strList);
+
+        int resultHor = 0;
+        int resultVert = 0;
+
+        for (List<List<Integer>> list: inputList){
+            List<Integer> bitwiseList = bitwiseList(list);
+            for (Integer value : bitwiseList) {
+                List<Integer> combinations = listOfCombinations(value, list.get(0).get(0));
+                List<Integer> validCombinations = validCombinations(bitwiseList, combinations);
+            }
+            int val = countLineOnTop(bitwiseList);
+            resultHor += val;
+            System.out.println("resHor=" + resultHor);
+            if (val > 0) {
+                continue;
+            }
+
+            List<List<Integer>> rotatedMatrix = rotateMatrix(list);
+            resultVert += countLineOnTop(bitwiseList(rotatedMatrix));
+            System.out.println("resultVert=" + resultVert);
+        }
+
+
+        return (resultHor*100L + resultVert);
+    }
+
+    public static int countLineOnTop(List<Integer> list) {
+
+        int curMirrorSize = 0;
+        for (int i = 0; i < list.size(); i++){
+            List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
+            boolean mirrored = false;
+            for (Pair<Integer, Integer> pair : pairs) {
+
+                boolean isEqual = isBitwiseEqual(list.get(pair.getLeft()), list.get(pair.getRight()));
+                if(!isEqual) {
+                    mirrored = false;
+                    break;
+                }
+                mirrored = true;
+            }
+            if (mirrored) {
+                curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
+                System.out.println("wow that was a mirror! and size is " + curMirrorSize);
+                break;
+            }
+        }
+        return curMirrorSize;
     }
 
     static List<List<List<Integer>>> parse2DList(List<String> strList) {
         List<List<List<Integer>>> result = new ArrayList<>();
         List<List<Integer>> matrix = new ArrayList<>();
+        int cntX = 0;
+        int cntY = 0;
         for (String str : strList) {
 
             if (str.isEmpty()) {
@@ -68,33 +107,31 @@ public class Day13 {
                 matrix.clear();
                 continue;
             }
-
+            cntX = 0;
             List<Integer> list = new ArrayList<>();
             for (int i = 0; i < str.length(); i++) {
                 list.add(str.charAt(i) == '.' ? 0 : 1);
+                cntX++;
             }
             matrix.add(list);
-
+            cntY++;
         }
         result.add(new ArrayList<>(matrix));
+        maxPos = Math.max(cntX, cntY);
         return result;
     }
 
-    //Check if 2 lines equal
-    static boolean isArraysEqual(List<Integer> lineA, List<Integer> lineB) {
-        for (int i = 0; i < lineA.size(); i++) {
-            if(!lineA.get(i).equals(lineB.get(i))) {
-                return false;
-            }
-        }
-        //System.out.println(lineA + " and " + lineB + " are equal");
-        return true;
+    public static boolean isBitwiseEqual(int numA, int numB) {
+        //System.out.println(numA ^ numB);
+        return (numA ^ numB) == 0;
     }
 
-    // 4 = 2
-    // 5 = 2
-    public static int findMiddle(List<List<Integer>> matrix) {
-        return ((matrix.size() % 2 == 0) ? (matrix.size() / 2) : (matrix.size()/2 + 1));
+    public static boolean isPowerOfTwo(int num)
+    {
+        if(num == 0) {
+            return false;
+        }
+        return ((num != 1) && (num & (num - 1)) ==0);
     }
 
     // 1 -> [0,2]
@@ -116,8 +153,6 @@ public class Day13 {
             }
             rotatedMatrix.add(ints);
         }
-        //System.out.println("rotated");
-        //System.out.println(rotatedMatrix);
         return rotatedMatrix;
     }
 
@@ -138,8 +173,50 @@ public class Day13 {
         return totalHoriz*100 + totalVert;
     }
 
+    public static int listToBitInt(List<Integer> listOfZeroAndOnes) {
+        StringBuilder sb = new StringBuilder();
+        listOfZeroAndOnes.forEach(sb::append);
+        //System.out.println("sb = " + sb);
+        //System.out.println("int val = " + value);
+        return Integer.parseInt(sb.toString(), 2);
+    }
+
+    public static List<Integer> bitwiseList(List<List<Integer>> inputList ) {
+        List<Integer> bitwiseIntList = new ArrayList<>();
+        inputList.forEach( p ->
+                bitwiseIntList.add(listToBitInt(p))
+        );
+        return bitwiseIntList;
+    }
+
+    public static int updateGivenPositionOfInt(int value, int pos) {
+        System.out.println(Integer.toBinaryString(value ^ (1 << pos)));
+        return value ^ (1 << pos);
+    }
+
+    public static List<Integer> listOfCombinations(int value, int totalLength) {
+        System.out.println(Integer.toBinaryString(value));
+        List<Integer> numbersList = new ArrayList<>();
+        for(int i = 0; i < totalLength; i++) {
+            numbersList.add(updateGivenPositionOfInt(value, i));
+        }
+        System.out.println(numbersList);
+        return numbersList;
+    }
+
+    public static List<Integer> validCombinations(List<Integer> listOfLinesInMatrix, List<Integer> listOfCombinations) {
+        List<Integer> vals = new ArrayList<>();
+        for (Integer lineVal : listOfLinesInMatrix) {
+            for(Integer combination : listOfCombinations) {
+                if(lineVal.equals(combination)){
+                    vals.add(combination);
+                }
+            }
+        }
+        return vals;
+    }
+
     static void clear() {
-        //alreadyVisited.clear();
         inputList.clear();
     }
 }
