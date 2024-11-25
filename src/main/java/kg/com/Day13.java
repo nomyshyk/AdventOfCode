@@ -49,26 +49,71 @@ public class Day13 {
         int resultHor = 0;
         int resultVert = 0;
 
-        for (List<List<Integer>> list: inputList){
+        for (List<List<Integer>> list: inputList) {
             List<Integer> bitwiseList = bitwiseList(list);
-            for (Integer value : bitwiseList) {
-                List<Integer> combinations = listOfCombinations(value, list.get(0).get(0));
+            boolean combFound = false;
+            outer:
+            for (int i = 0; i < bitwiseList.size(); i++) {
+                List<Integer> combinations = listOfCombinations(bitwiseList.get(i), list.get(0).size());
                 List<Integer> validCombinations = validCombinations(bitwiseList, combinations);
+
+                inner:
+                for (int j = 0; j < validCombinations.size(); j++) {
+                    List<Integer> updatedMatrix = replaceValueInMatrix(bitwiseList, i, validCombinations.get(j));
+
+                    int val = countLineOnTop(updatedMatrix);
+                    if (val > 0) {
+                        resultHor += val;
+                        System.out.println("resHor=" + resultHor);
+                        //System.out.println("newNo = " + Integer.toBinaryString(validCombinations.get(j)) + ", line=" + i);
+                        combFound = true;
+                        break outer;
+                    }
+                }
+
             }
-            int val = countLineOnTop(bitwiseList);
-            resultHor += val;
-            System.out.println("resHor=" + resultHor);
-            if (val > 0) {
+
+            if (combFound) {
                 continue;
             }
 
+            boolean vertFound = false;
+            // vertical
             List<List<Integer>> rotatedMatrix = rotateMatrix(list);
-            resultVert += countLineOnTop(bitwiseList(rotatedMatrix));
-            System.out.println("resultVert=" + resultVert);
+            List<Integer> rotList = bitwiseList(rotatedMatrix);
+            outer2:
+            for (int i = 0; i < rotList.size(); i++) {
+                List<Integer> combinations = listOfCombinations(rotList.get(i), rotatedMatrix.get(0).size());
+                List<Integer> validCombinations = validCombinations(rotList, combinations);
+
+                inner:
+                for (int j = 0; j < validCombinations.size(); j++) {
+                    List<Integer> updatedMatrix = replaceValueInMatrix(rotList, i, validCombinations.get(j));
+
+                    int val = countLineOnTop(updatedMatrix);
+                    if (val > 0) {
+                        resultVert += val;
+                        System.out.println("resVert=" + resultVert);
+                        vertFound = true;
+                        break outer2;
+                    }
+                }
+
+            }
+
+            if(!vertFound) {
+                System.out.println();
+            }
         }
 
 
         return (resultHor*100L + resultVert);
+    }
+
+    public static List<Integer> replaceValueInMatrix(List<Integer> bitwiseList, int idxToReplace, int intToReplace) {
+        List<Integer> values = new ArrayList<>(bitwiseList);
+        values.set(idxToReplace, intToReplace);
+        return values;
     }
 
     public static int countLineOnTop(List<Integer> list) {
@@ -77,8 +122,8 @@ public class Day13 {
         for (int i = 0; i < list.size(); i++){
             List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
             boolean mirrored = false;
-            for (Pair<Integer, Integer> pair : pairs) {
 
+            for (Pair<Integer, Integer> pair : pairs) {
                 boolean isEqual = isBitwiseEqual(list.get(pair.getLeft()), list.get(pair.getRight()));
                 if(!isEqual) {
                     mirrored = false;
@@ -197,7 +242,7 @@ public class Day13 {
     public static List<Integer> listOfCombinations(int value, int totalLength) {
         System.out.println(Integer.toBinaryString(value));
         List<Integer> numbersList = new ArrayList<>();
-        for(int i = 0; i < totalLength; i++) {
+        for(int i = 0; i <= totalLength; i++) {
             numbersList.add(updateGivenPositionOfInt(value, i));
         }
         System.out.println(numbersList);
