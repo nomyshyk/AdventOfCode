@@ -25,7 +25,7 @@ public class Day13 {
 
         for (List<List<Integer>> list: inputList){
             List<Integer> bitwiseList = bitwiseList(list);
-            int val = countLineOnTop(bitwiseList);
+            int val = countLineOnTop(bitwiseList, list.size());
             resultHor += val;
             System.out.println("resHor=" + resultHor);
             if (val > 0) {
@@ -33,7 +33,7 @@ public class Day13 {
             }
 
             List<List<Integer>> rotatedMatrix = rotateMatrix(list);
-            resultVert += countLineOnTop(bitwiseList(rotatedMatrix));
+            resultVert += countLineOnTop(bitwiseList(rotatedMatrix), rotatedMatrix.size());
             System.out.println("resultVert=" + resultVert);
         }
 
@@ -61,7 +61,7 @@ public class Day13 {
                 for (int j = 0; j < validCombinations.size(); j++) {
                     List<Integer> updatedMatrix = replaceValueInMatrix(bitwiseList, i, validCombinations.get(j));
 
-                    int val = countLineOnTop(updatedMatrix);
+                    int val = countLineOnTop(updatedMatrix, i+1);
                     if (val > 0) {
                         resultHor += val;
                         System.out.println("resHor=" + resultHor);
@@ -90,7 +90,7 @@ public class Day13 {
                 for (int j = 0; j < validCombinations.size(); j++) {
                     List<Integer> updatedMatrix = replaceValueInMatrix(rotList, i, validCombinations.get(j));
 
-                    int val = countLineOnTop(updatedMatrix);
+                    int val = countLineOnTop(updatedMatrix, i+1);
                     if (val > 0) {
                         resultVert += val;
                         System.out.println("resVert=" + resultVert);
@@ -116,11 +116,12 @@ public class Day13 {
         return values;
     }
 
-    public static int countLineOnTop(List<Integer> list) {
+    public static int countLineOnTop(List<Integer> list, int curIdx) {
 
         int curMirrorSize = 0;
-        for (int i = 0; i < list.size(); i++){
-            List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
+        outer:
+        for (int i = 0; i <= curIdx; i++){
+            List<Pair<Integer, Integer>> pairs = pairList(i, curIdx);
             boolean mirrored = false;
 
             for (Pair<Integer, Integer> pair : pairs) {

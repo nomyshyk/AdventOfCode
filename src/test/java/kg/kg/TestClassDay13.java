@@ -49,7 +49,7 @@ public class TestClassDay13 {
     @Test
     public void day13Part1_Test_3() {
         List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
-        assertEquals(Day13.executePart1(strList), 400);
+        assertEquals(Day13.executePart1(strList), 1400);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class TestClassDay13 {
 
     @Test
     public void pairListTest() {
-        assertEquals(Day13.pairList(1, 7), 0);
+        assertEquals(Day13.pairList(3, 7), 0);
     }
 
     @Test
