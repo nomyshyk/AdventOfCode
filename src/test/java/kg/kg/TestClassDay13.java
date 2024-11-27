@@ -67,7 +67,7 @@ public class TestClassDay13 {
     @Test
     public void day13Part2_Test_3() {
         List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
-        assertEquals(Day13.executePart2(strList), 11); //36891, 36902, 36999, 40995
+        assertEquals(Day13.executePart2(strList), 12); //36891, 36902, 36999, 40995
     }
 
     @Test
@@ -94,5 +94,11 @@ public class TestClassDay13 {
     @Test
     public void listOfCombinationsTest() {
         assertEquals(1, Day13.listOfCombinations(12, 8 ));
+    }
+
+    @Test
+    public void countLineOnTopTest() {
+        //assertEquals(1, Day13.countLineOnTop(List.of(12,12,200), 2 ).getLeft());
+        assertEquals(2, Day13.countLineOnTop(List.of(12,200,200,12), 4 ).getLeft());
     }
 }
