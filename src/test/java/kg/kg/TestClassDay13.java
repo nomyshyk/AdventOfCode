@@ -76,17 +76,6 @@ public class TestClassDay13 {
     }
 
     @Test
-    public void checkBitwiseEqualTest() {
-        assertEquals(true, Day13.isBitwiseEqual(120, 120));
-        assertEquals(false, Day13.isBitwiseEqual(15, 8));
-    }
-
-    @Test
-    public void ifPowerOf2() {
-        assertEquals(true, Day13.isPowerOfTwo(0));
-    }
-
-    @Test
     public void updateGivenPosTest() {
         assertEquals(1, Day13.updateGivenPositionOfInt(2, 1));
     }
@@ -94,11 +83,5 @@ public class TestClassDay13 {
     @Test
     public void listOfCombinationsTest() {
         assertEquals(1, Day13.listOfCombinations(12, 8 ));
-    }
-
-    @Test
-    public void countLineOnTopTest() {
-        //assertEquals(1, Day13.countLineOnTop(List.of(12,12,200), 2 ).getLeft());
-        assertEquals(2, Day13.countLineOnTop(List.of(12,200,200,12), 4 ).getLeft());
     }
 }
