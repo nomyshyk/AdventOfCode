@@ -4,13 +4,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 // Parse matrix
 // One vertical and one horizontal
-// Store in tuples
-// Find middle and go up and down
-// If found - count
+// Dont need numbers - 01 list is OK
+// Count overall differences - not line vs line but total
 public class Day13 {
 
     static List<List<List<Integer>>> inputList = new ArrayList<>();
@@ -25,8 +23,12 @@ public class Day13 {
         int resultVert = 0;
 
         for (List<List<Integer>> list: inputList){
+
+            //countLineDiff()
+
             List<Integer> bitwiseList = bitwiseList(list);
             int valPair = countLineOnTop(bitwiseList, list.size()).getLeft();
+            List<Integer> integers = noBinaryPairs(list, 0);
             resultHor += valPair;
             System.out.println("resHor=" + resultHor);
             if (valPair > 0) {
@@ -52,76 +54,105 @@ public class Day13 {
 
         for (List<List<Integer>> list: inputList) {
             List<Integer> bitwiseList = bitwiseList(list);
-            boolean combFound = false;
-            outer:
-            for (int i = 0; i < bitwiseList.size(); i++) {
-                List<Integer> combinations = listOfCombinations(bitwiseList.get(i), list.get(0).size());
-                List<Integer> validCombinations = validCombinations(bitwiseList, combinations);
+            Integer existingHoriz = countLineOnTop(bitwiseList, list.size()).getLeft();
 
-                inner:
-                for (int j = 0; j < validCombinations.size(); j++) {
-                    List<Integer> updatedMatrix = replaceValueInMatrix(bitwiseList, i, validCombinations.get(j));
+            int hor = countHorizAndVert(list, bitwiseList, existingHoriz);
 
-                    Pair<Integer, Pair<Integer, Integer>> valPair = countLineOnTop(updatedMatrix, list.size());
-                    int val = valPair.getLeft();
-                    int begin = valPair.getRight().getLeft();
-                    int end = valPair.getRight().getRight();
-                    if (val > 0 && (begin <= i && end >= i)) {
-                        resultHor += val;
-                        System.out.println("resHor=" + resultHor);
-                        //System.out.println("newNo = " + Integer.toBinaryString(validCombinations.get(j)) + ", line=" + i);
-                        combFound = true;
-                        break outer;
-                    }
-                }
-
-            }
-
-            if (combFound) {
+            resultHor += hor;
+            if (hor > 0) {
                 continue;
             }
 
-            boolean vertFound = false;
             // vertical
             List<List<Integer>> rotatedMatrix = rotateMatrix(list);
             List<Integer> rotList = bitwiseList(rotatedMatrix);
-            outer2:
-            for (int i = 0; i < rotList.size(); i++) {
-                List<Integer> combinations = listOfCombinations(rotList.get(i), rotatedMatrix.get(0).size());
-                List<Integer> validCombinations = validCombinations(rotList, combinations);
-
-                inner:
-                for (int j = 0; j < validCombinations.size(); j++) {
-                    List<Integer> updatedMatrix = replaceValueInMatrix(rotList, i, validCombinations.get(j));
-
-                    Pair<Integer, Pair<Integer, Integer>> valPair = countLineOnTop(updatedMatrix, rotatedMatrix.size());
-                    int val = valPair.getLeft();
-                    int begin = valPair.getRight().getLeft();
-                    int end = valPair.getRight().getRight();
-
-                    if (val > 0 && (begin <= i && end >= i)) {
-                        resultVert += val;
-                        System.out.println("resVert=" + resultVert);
-                        vertFound = true;
-                        break outer2;
-                    }
-                }
-
-            }
-
-            if(!vertFound) {
-                System.out.println();
-            }
+            Integer existingVert = countLineOnTop(bitwiseList(rotatedMatrix), rotatedMatrix.size()).getLeft();
+            int ver = countHorizAndVert(rotatedMatrix, rotList, existingVert);
+            resultVert += ver;
         }
 
 
         return (resultHor*100L + resultVert);
     }
 
+    public static int countLineDiff(List<Integer> listA, List<Integer> listB, int allowedDiffAmt) {
+        int diffAmt = 0;
+        for (int i = 0; i < listA.size(); i++) {
+            if(!listA.get(i).equals(listB.get(i))){
+                diffAmt++;
+            }
+            if(diffAmt > allowedDiffAmt) {
+                break;
+            }
+        }
+        return diffAmt;
+    }
+
     public static List<Integer> replaceValueInMatrix(List<Integer> bitwiseList, int idxToReplace, int intToReplace) {
         List<Integer> values = new ArrayList<>(bitwiseList);
         values.set(idxToReplace, intToReplace);
         return values;
+    }
+
+    public static int countHorizAndVert(List<List<Integer>> list, List<Integer> bitwiseList, int excludeThis) {
+        int val = 0;
+        outer:
+        for (int i = 0; i < bitwiseList.size(); i++) {
+            List<Integer> combinations = listOfCombinations(bitwiseList.get(i), list.get(0).size());
+            List<Integer> validCombinations = validCombinations(bitwiseList, combinations);
+
+            inner:
+            for (int j = 0; j < validCombinations.size(); j++) {
+                List<Integer> updatedMatrix = replaceValueInMatrix(bitwiseList, i, validCombinations.get(j));
+
+                Pair<Integer, Pair<Integer, Integer>> valPair = countLineOnTop(updatedMatrix, list.size());
+                val = valPair.getLeft();
+                if (val > 0 && val == excludeThis) {
+                    val = 0;
+                    continue inner;
+                }
+                int begin = valPair.getRight().getLeft();
+                int end = valPair.getRight().getRight();
+                if (val > 0 && (begin <= i && end >= i)) {
+                    //resultHor += val;
+                    System.out.println("resHor=" + val);
+                    //System.out.println("newNo = " + Integer.toBinaryString(validCombinations.get(j)) + ", line=" + i);
+                    //combFound = true;
+                    break outer;
+                }
+            }
+        }
+        return val;
+    }
+
+    public static List<Integer> noBinaryPairs(List<List<Integer>> list, int allowedDiffAmt) {
+        List<Integer> allCombies = new ArrayList<>();
+        //int curMirrorSize = 0;
+        
+        outer:
+        for (int i = 0; i <= list.size(); i++){
+            int curMirrorSize = 0;
+            int begin = Integer.MAX_VALUE;
+            int end = 0;
+            
+            List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
+
+            for (Pair<Integer, Integer> pair : pairs) {
+                int allowedErrCnt = countLineDiff(list.get(pair.getLeft()), list.get(pair.getRight()), 0);
+                if(allowedErrCnt > allowedDiffAmt) {
+                    begin = Integer.MAX_VALUE;
+                    end = 0;
+                    break;
+                }
+
+                begin = Math.min(begin, Math.min(pair.getLeft(), pair.getRight()));
+                end = Math.max(end, Math.max(pair.getLeft(), pair.getRight()));
+            }
+            curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
+            allCombies.add(curMirrorSize);
+
+        }
+        return allCombies;
     }
 
     // mirror and list of lines in mirror.
@@ -147,12 +178,14 @@ public class Day13 {
                 }
                 begin = Math.min(begin, Math.min(pair.getLeft(), pair.getRight()));
                 end = Math.max(end, Math.max(pair.getLeft(), pair.getRight()));
+
                 mirrored = true;
             }
             if (mirrored) {
                 curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
                 System.out.println("wow that was a mirror! and size is " + curMirrorSize);
                 System.out.println("begin=" + begin + ", end=" + end + ", list is=" + list);
+
                 System.out.println();
                 break;
             } else {
@@ -202,6 +235,15 @@ public class Day13 {
         }
         return ((num != 1) && (num & (num - 1)) ==0);
     }
+
+//    public static List<Pair<Integer, Integer>> pairListNonInteger(int curValue, int length) {
+//        List<Pair<Integer, Integer>> pairs = new ArrayList<>();
+//        for (int i = 1; curValue+i < length && curValue-i+1 >= 0; i++) {
+//            pairs.add(Pair.of(curValue-i+1, curValue+i));
+//        }
+//        System.out.println(pairs);
+//        return pairs;
+//    }
 
     // 1 -> [0,2]
     public static List<Pair<Integer, Integer>> pairList(int curValue, int length) {
