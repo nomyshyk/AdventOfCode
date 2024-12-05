@@ -1,7 +1,6 @@
 package kg.kg;
 
 
-import kg.com.Day12;
 import kg.com.Day13;
 import kg.com.FileLoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,11 +45,6 @@ public class TestClassDay13 {
         assertEquals(Day13.executePart1(strList), 37718);
     }
 
-//    @Test
-//    public void day13Part1_Test_3() {
-//        List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
-//        assertEquals(Day13.executePart1(strList), 1400);
-//    }
 
     @Test
     public void day13Part2_Test_1() {
@@ -61,27 +55,12 @@ public class TestClassDay13 {
     @Test
     public void day13Part2_Test_2() {
         List<String> strList = FileLoader.inputLines("input_day13_p2_1.txt");
-        assertEquals(Day13.executePart2(strList), 40995); //36902, 36999
+        assertEquals(Day13.executePart2(strList), 40995);
     }
 
     @Test
     public void day13Part2_Test_3() {
         List<String> strList = FileLoader.inputLines("input_day13_p3.txt");
-        assertEquals(Day13.executePart2(strList), 12); //36891, 36902, 36999, 40995
-    }
-
-    @Test
-    public void pairListTest() {
-        assertEquals(Day13.pairList(3, 7), 0);
-    }
-
-    @Test
-    public void updateGivenPosTest() {
-        assertEquals(1, Day13.updateGivenPositionOfInt(2, 1));
-    }
-
-    @Test
-    public void listOfCombinationsTest() {
-        assertEquals(1, Day13.listOfCombinations(12, 8 ));
+        assertEquals(Day13.executePart2(strList), 12);
     }
 }

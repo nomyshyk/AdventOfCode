@@ -28,7 +28,7 @@ public class Day13 {
             List<Integer> integers = noBinaryPairs(list, 0);
             if(!integers.isEmpty()) {
                 resultHor += integers.get(0);
-                System.out.println("resHor=" + resultHor);
+                // System.out.println("resHor=" + resultHor);
                 continue;
             }
 
@@ -36,10 +36,11 @@ public class Day13 {
             List<Integer> verInts = noBinaryPairs(rotatedMatrix, 0);
             if(!verInts.isEmpty()) {
                 resultVert += verInts.get(0);
-                System.out.println("resVert=" + resultVert);
+                // System.out.println("resVert=" + resultVert);
             }
 
         }
+        System.out.println(resultHor*100L + resultVert);
         return (resultHor*100L + resultVert);
     }
 
@@ -56,11 +57,12 @@ public class Day13 {
             List<Integer> integers = noBinaryPairs(list, 0);
 
             List<Integer> integerUpdated = noBinaryPairs(list, 1);
-            Optional<Integer> first = integerUpdated.stream().filter(p -> p.equals(integers.isEmpty() ? -1 : integers.get(0)))
+            Optional<Integer> first = integerUpdated.stream()
+                    .filter(p -> !p.equals(integers.isEmpty() ? -1 : integers.get(0)))
                     .findFirst();
             if(first.isPresent()) {
                 resultHor += first.get();
-                System.out.println("resultHor=" + resultHor);
+                // System.out.println("resultHor=" + resultHor);
                 continue;
             }
 
@@ -70,15 +72,15 @@ public class Day13 {
 
             List<Integer> integerUpdatedVert = noBinaryPairs(rotatedMatrix, 1);
             Optional<Integer> firstVert = integerUpdatedVert.stream()
-                    .filter(p -> p.equals(integersVert.isEmpty() ? -1 : integersVert.get(0)))
+                    .filter(p -> !p.equals(integersVert.isEmpty() ? -1 : integersVert.get(0)))
                     .findFirst();
             if(firstVert.isPresent()) {
                 resultVert += firstVert.get();
-                System.out.println("resultVert=" + resultVert);
+                // System.out.println("resultVert=" + resultVert);
             }
         }
 
-
+        System.out.println(resultHor*100L + resultVert);
         return (resultHor*100L + resultVert);
     }
 
@@ -86,7 +88,7 @@ public class Day13 {
         int diffAmt = 0;
         for (int i = 0; i < listA.size(); i++) {
             if(!listA.get(i).equals(listB.get(i))){
-                diffAmt++;
+                ++diffAmt;
             }
             if(diffAmt > allowedDiffAmt) {
                 break;
@@ -97,37 +99,31 @@ public class Day13 {
 
     public static List<Integer> noBinaryPairs(List<List<Integer>> list, int allowedDiffAmt) {
         List<Integer> allCombies = new ArrayList<>();
-        //int curMirrorSize = 0;
-        int allowedErrCnt = 0;
         outer:
-        for (int i = 0; i <= list.size(); i++){
-            boolean found = false;
+        // 2D array is here
+        for (int i = 0; i <= list.size(); i++) {
+            int allowedErrCnt = 0;
+            boolean found = true;
             int curMirrorSize = 0;
-            int begin = Integer.MAX_VALUE;
-            int end = 0;
-            
+
             List<Pair<Integer, Integer>> pairs = pairList(i, list.size());
 
+            //all possible combinations for selected row
             for (Pair<Integer, Integer> pair : pairs) {
+                // what if > 0 is returned
                 allowedErrCnt += countLineDiff(list.get(pair.getLeft()), list.get(pair.getRight()), allowedDiffAmt);
                 //TODO this should be updated
+                // Means that theres no point to search this pair combinations
                 if(allowedErrCnt > allowedDiffAmt) {
-                    begin = Integer.MAX_VALUE;
-                    end = 0;
                     found = false;
                     allowedErrCnt = 0;
                     break;
                 }
-
-                begin = Math.min(begin, Math.min(pair.getLeft(), pair.getRight()));
-                end = Math.max(end, Math.max(pair.getLeft(), pair.getRight()));
-                found = true;
             }
-            if(found) {
+            if(found && !pairs.isEmpty() && allowedErrCnt==allowedDiffAmt) {
                 curMirrorSize = Math.max(curMirrorSize, pairs.get(0).getLeft()+1);
                 allCombies.add(curMirrorSize);
             }
-
         }
         return allCombies;
     }
@@ -158,13 +154,12 @@ public class Day13 {
         return result;
     }
 
-    // 1 -> [0,2]
     public static List<Pair<Integer, Integer>> pairList(int curValue, int length) {
         List<Pair<Integer, Integer>> pairs = new ArrayList<>();
         for (int i = 1; curValue+i < length && curValue-i+1 >= 0; i++) {
             pairs.add(Pair.of(curValue-i+1, curValue+i));
         }
-        System.out.println(pairs);
+        //System.out.println(pairs);
         return pairs;
     }
 
