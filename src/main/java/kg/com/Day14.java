@@ -1,11 +1,13 @@
 package kg.com;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Day14 {
 
-    static List<List<List<Integer>>> inputList = new ArrayList<>();
+    static List<List<String>> inputList = new ArrayList<>();
     static int maxPos = 0;
 
     public static Long executePart1(List<String> strList) {
@@ -16,10 +18,10 @@ public class Day14 {
         int resultHor = 0;
         int resultVert = 0;
 
-        for (List<List<Integer>> list: inputList){
-
-        }
-        System.out.println(resultHor*100L + resultVert);
+//        for (List<List<Integer>> list: inputList){
+//
+//        }
+        //System.out.println(resultHor*100L + resultVert);
         return (resultHor*100L + resultVert);
     }
 
@@ -29,29 +31,56 @@ public class Day14 {
         return 0L;
     }
 
-    static List<List<List<Integer>>> parse2DList(List<String> strList) {
-        List<List<List<Integer>>> result = new ArrayList<>();
-        List<List<Integer>> matrix = new ArrayList<>();
-        int cntX = 0;
-        int cntY = 0;
+    static List<List<String>> parse2DList(List<String> strList) {
+        List<List<String>> result = new ArrayList<>();
         for (String str : strList) {
-            if (str.isEmpty()) {
-                result.add(new ArrayList<>(matrix));
-                matrix.clear();
-                continue;
-            }
-            cntX = 0;
-            List<Integer> list = new ArrayList<>();
+            List<String> list = new ArrayList<>();
             for (int i = 0; i < str.length(); i++) {
-                list.add(str.charAt(i) == '.' ? 0 : 1);
-                cntX++;
+                list.add(String.valueOf(str.charAt(i)));
             }
-            matrix.add(list);
-            cntY++;
+            result.add(list);
         }
-        result.add(new ArrayList<>(matrix));
-        maxPos = Math.max(cntX, cntY);
+        System.out.println(result);
         return result;
+    }
+
+    public List<String> order(List<String> unorderedList) {
+        List<Pair<Integer, Integer>> stonePositions = new ArrayList<>();
+        int lastStonePos = 0;
+        for (int i = 0; i < unorderedList.size(); i++) {
+            if (unorderedList.get(i).equals("#")) {
+                stonePositions.add(Pair.of(lastStonePos, i));
+                lastStonePos = i;
+            }
+        }
+
+        // If empty use all range
+        if (stonePositions.isEmpty()) {
+            stonePositions.add(Pair.of(0, unorderedList.size() - 1));
+        }
+
+
+        List<Integer> countZerosInInterval = new ArrayList<>();
+
+        for (Pair<Integer, Integer> stonePosition : stonePositions) {
+            int cntZeros = 0;
+            for (int i = stonePosition.getLeft(); i <= stonePosition.getRight(); i++) {
+                if (unorderedList.get(i).equals("O")) {
+                    cntZeros++;
+                }
+            }
+            countZerosInInterval.add(cntZeros);
+        }
+
+
+        List<String> update = new ArrayList<>(unorderedList);
+
+        for (int i = 0; i < unorderedList.size(); i++) {
+            for (Pair<Integer, Integer> stonePosition : stonePositions) {
+
+            }
+        }
+        return null;
     }
 
 //    public static List<List<Integer>> rotateMatrix(List<List<Integer>> matrix) {
