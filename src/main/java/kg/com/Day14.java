@@ -15,14 +15,14 @@ public class Day14 {
         clear();
         inputList = parse2DList(strList);
 
-        int resultHor = 0;
-        int resultVert = 0;
+        long total = 0;
+        List<List<String>> rotatedMatrix = rotateMatrix(inputList);
+        for (List<String> list: rotatedMatrix){
+            total += order(list);
+        }
 
-//        for (List<List<Integer>> list: inputList){
-//
-//        }
-        //System.out.println(resultHor*100L + resultVert);
-        return (resultHor*100L + resultVert);
+        System.out.printf("Total is %s", total);
+        return total;
     }
 
     public static Long executePart2(List<String> strList) {
@@ -40,25 +40,26 @@ public class Day14 {
             }
             result.add(list);
         }
-        System.out.println(result);
+        //System.out.println(result);
         return result;
     }
 
-    public List<String> order(List<String> unorderedList) {
+    public static Long order(List<String> unorderedList) {
         List<Pair<Integer, Integer>> stonePositions = new ArrayList<>();
         List<Integer> counts = new ArrayList<>();
         int lastStonePos = 0;
         int cnt0 = 0;
         for (int i = 0; i < unorderedList.size(); i++) {
-            if (unorderedList.get(i).equals("#")) {
-                stonePositions.add(Pair.of(lastStonePos, i));
+            if (unorderedList.get(i).equals("O")){
+               cnt0++;
+            }
+
+            if (unorderedList.get(i).equals("#") || (i == unorderedList.size()-1)) {
+                //System.out.printf("new pair %s and %s%n", lastStonePos, i);
+                stonePositions.add(Pair.of(((lastStonePos==0 && stonePositions.isEmpty()) ? 0 : lastStonePos + 1), i));
                 lastStonePos = i;
                 counts.add(cnt0);
                 cnt0 = 0;
-            }
-
-            if (unorderedList.get(i).equals("O")){
-               cnt0++;
             }
         }
 
@@ -68,13 +69,17 @@ public class Day14 {
             counts.add(0);
         }
 
-        return null;
+        long total = 0L;
+        for (int i = 0; i < stonePositions.size(); i++) {
+            total += calculateTotal(stonePositions.get(i), counts.get(i), unorderedList.size());
+        }
+        return total;
     }
 
-    public static long calculateZeros(Pair<Integer, Integer> border, int amtOfZeros, int totalLength) {
+    //Counts
+    public static long calculateTotal(Pair<Integer, Integer> border, int amtOfZeros, int totalLength) {
         Integer begin = border.getLeft();
-        //Integer end = border.getRight();
-        //int razn = totalLength - end;
+
         long total = 0;
 
         for (int i = begin; i < (begin + amtOfZeros); i++) {
@@ -83,17 +88,17 @@ public class Day14 {
         return total;
     }
 
-//    public static List<List<Integer>> rotateMatrix(List<List<Integer>> matrix) {
-//        List<List<Integer>> rotatedMatrix = new ArrayList<>();
-//        for(int i = 0; i < matrix.get(1).size(); i++){
-//            List<Integer> ints = new ArrayList<>();
-//            for (int j = 0; j < matrix.size(); j++) {
-//                ints.add(matrix.get(j).get(i));
-//            }
-//            rotatedMatrix.add(ints);
-//        }
-//        return rotatedMatrix;
-//    }
+    public static List<List<String>> rotateMatrix(List<List<String>> matrix) {
+        List<List<String>> rotatedMatrix = new ArrayList<>();
+        for(int i = 0; i < matrix.get(1).size(); i++){
+            List<String> newStr = new ArrayList<>();
+            for (int j = 0; j < matrix.size(); j++) {
+                newStr.add(matrix.get(j).get(i));
+            }
+            rotatedMatrix.add(newStr);
+        }
+        return rotatedMatrix;
+    }
 
     static void clear() {
         inputList.clear();
