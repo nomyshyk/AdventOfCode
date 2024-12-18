@@ -57,10 +57,4 @@ public class TestClassDay14 {
         assertEquals(Day14.order(List.of("O", ".", ".", ".", "#")), 5);
         assertEquals(Day14.order(List.of("#", ".", ".", ".", "O")), 4);
     }
-
-//    @Test
-//    public void day14Part1_Test_2() {
-//        List<String> strList = FileLoader.inputLines("input_day14_p2_1.txt");
-//        assertEquals(Day14.executePart1(strList), 37718);
-//    }
 }
