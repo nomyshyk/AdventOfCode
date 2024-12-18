@@ -46,41 +46,41 @@ public class Day14 {
 
     public List<String> order(List<String> unorderedList) {
         List<Pair<Integer, Integer>> stonePositions = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
         int lastStonePos = 0;
+        int cnt0 = 0;
         for (int i = 0; i < unorderedList.size(); i++) {
             if (unorderedList.get(i).equals("#")) {
                 stonePositions.add(Pair.of(lastStonePos, i));
                 lastStonePos = i;
+                counts.add(cnt0);
+                cnt0 = 0;
+            }
+
+            if (unorderedList.get(i).equals("O")){
+               cnt0++;
             }
         }
 
         // If empty use all range
         if (stonePositions.isEmpty()) {
             stonePositions.add(Pair.of(0, unorderedList.size() - 1));
+            counts.add(0);
         }
 
-
-        List<Integer> countZerosInInterval = new ArrayList<>();
-
-        for (Pair<Integer, Integer> stonePosition : stonePositions) {
-            int cntZeros = 0;
-            for (int i = stonePosition.getLeft(); i <= stonePosition.getRight(); i++) {
-                if (unorderedList.get(i).equals("O")) {
-                    cntZeros++;
-                }
-            }
-            countZerosInInterval.add(cntZeros);
-        }
-
-
-        List<String> update = new ArrayList<>(unorderedList);
-
-        for (int i = 0; i < unorderedList.size(); i++) {
-            for (Pair<Integer, Integer> stonePosition : stonePositions) {
-
-            }
-        }
         return null;
+    }
+
+    public static long calculateZeros(Pair<Integer, Integer> border, int amtOfZeros, int totalLength) {
+        Integer begin = border.getLeft();
+        //Integer end = border.getRight();
+        //int razn = totalLength - end;
+        long total = 0;
+
+        for (int i = begin; i < (begin + amtOfZeros); i++) {
+            total += (totalLength - i);
+        }
+        return total;
     }
 
 //    public static List<List<Integer>> rotateMatrix(List<List<Integer>> matrix) {

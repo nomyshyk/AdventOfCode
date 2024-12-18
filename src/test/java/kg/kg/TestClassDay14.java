@@ -10,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestClassDay14 {
+
     @BeforeEach
     public void init() {
     }
