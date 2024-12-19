@@ -29,6 +29,12 @@ public class TestClassDay14 {
     }
 
     @Test
+    public void day14Part2_Test_1() {
+        List<String> strList = FileLoader.inputLines("input_day14_p1_1.txt");
+        assertEquals(Day14.executePart2(strList), 64L);
+    }
+
+    @Test
     public void calculateZerosTest() {
 
         assertEquals(Day14.calculateTotal(Pair.of(0, 0), 0, 10), 0);
