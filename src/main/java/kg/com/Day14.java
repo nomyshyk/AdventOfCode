@@ -2,10 +2,8 @@ package kg.com;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Day14 {
 
@@ -33,15 +31,30 @@ public class Day14 {
         inputList = parse2DList(strList);
 
         long total = 0;
+        //int cnt = 0;
         List<List<String>> rotatedMatrix = rotateMatrix(inputList);
         for (List<String> list: rotatedMatrix){
-            total += order(list);
+            //total += order(list);
+            List<String> s = splitOrderMerge(list);
+            total += counter(s);
+            System.out.println(total);
         }
 
         System.out.printf("Total is %s", total);
         return total;
     }
 
+    public static Long counter(List<String> list) {
+//        return list.stream().filter("O"::equals)
+//                .count() * index;
+        long result = 0L;
+        for(int i = 0; i < list.size(); i++) {
+            if("O".equals(list.get(i))) {
+                result += list.size()-i;
+            }
+        }
+        return result;
+    }
     public static Long executePart2(List<String> strList) {
         clear();
         inputList = parse2DList(strList);
@@ -67,27 +80,25 @@ public class Day14 {
     }
 
     static List<List<String>> rotate(List<List<String>> matrix) {
-        System.out.println(rotateMatrix(matrix));
-//        System.out.println(rotateMatrix(rotateMatrix(matrix)));
-//        System.out.println(rotateMatrix(rotateMatrix(rotateMatrix(matrix))));
-//        System.out.println(rotateMatrix(rotateMatrix(rotateMatrix(rotateMatrix(matrix)))));
+        //System.out.println(rotateMatrix(matrix));
 
-        List<List<String>> updatedMatrix = new ArrayList<>(rotateMatrix(matrix));
+        // read north
+        List<List<String>> updatedMatrix = new ArrayList<>();
         //System.out.println(matrix);
-        for (List<String> list: matrix){
-            updatedMatrix.add(newMatrix(list));
+        for (List<String> list: rotateMatrix(matrix)){
+            updatedMatrix.add(newMatrix(list, false));
         }
 
-        //System.out.println("First rotation");
+        // read west
         System.out.println(updatedMatrix);
-        List<List<String>> north = clockwiseRotateMatrix(updatedMatrix);
-        updatedMatrix.clear();
-        for (List<String> list: north){
-            updatedMatrix.add(newMatrix(list));
-        }
-
-        System.out.println("First rotation");
-        System.out.println(updatedMatrix);
+//        List<List<String>> north = rotateMatrix(updatedMatrix);
+//        updatedMatrix.clear();
+//        for (List<String> list: north){
+//            updatedMatrix.add(newMatrix(list, false));
+//        }
+//
+//        System.out.println("First rotation");
+//        System.out.println(updatedMatrix);
 
 //        List<List<String>> east = reflectMatrix(inputList);
 //        updatedMatrix.clear();
@@ -150,7 +161,23 @@ public class Day14 {
         return total;
     }
 
-    public static List<String> newMatrix(List<String> unorderedList) {
+    public static List<String> splitOrderMerge(List<String> unorderedList) {
+        return Arrays.stream(Arrays.stream(String.join("", unorderedList)
+                        .split("#", -1))
+                .toList()
+                .stream()
+                .map(Day14::sortStr) // order
+                .collect(Collectors.joining("#"))
+                .split("")).toList();
+    }
+
+    public static String sortStr(String unsorted) {
+        return String.join("", Arrays.stream(unsorted.split(""))
+                .sorted(Comparator.reverseOrder())
+                .toList());
+    }
+
+    public static List<String> newMatrix(List<String> unorderedList, boolean isReverse) {
         List<Pair<Integer, Integer>> stonePositions = new ArrayList<>();
         List<Integer> counts = new ArrayList<>();
         int lastStonePos = 0;
@@ -178,10 +205,18 @@ public class Day14 {
         List<String> newArr = new ArrayList();
         //long total = 0L;
         for (int i = 0; i < stonePositions.size(); i++) {
-            newArr.addAll(generateNewLine(stonePositions.get(i), counts.get(i)));
+            newArr.addAll(generateNewLine(stonePositions.get(i), counts.get(i), isReverse));
         }
         return newArr;
     }
+
+//    public List<String> sort(List<String> unordered, boolean isReverse) {
+//        for(int i = 1; i<unordered.size(); i++) {
+//            if(unordered.get(i-1).equals(".") && unordered.get(i).equals("O")){
+//
+//            }
+//        }
+//    }
 
     public static List<List<Pair<Integer, Integer>>> cacheStoneIntervals(List<List<String>> matrix) {
         List<List<Pair<Integer, Integer>>> cachedMatrix = new ArrayList<>();
@@ -215,7 +250,7 @@ public class Day14 {
         return total;
     }
 
-    public static List<String> generateNewLine(Pair<Integer, Integer> border, int amtOfZeros) {
+    public static List<String> generateNewLine(Pair<Integer, Integer> border, int amtOfZeros, boolean isReverse) {
         List<String> arr = new ArrayList<>();
 
         for (int i = 0; i < border.getRight() - border.getLeft() + 1; i++) {
@@ -266,6 +301,8 @@ public class Day14 {
         }
         return rotatedMatrix;
     }
+
+
 
     static void clear() {
         inputList.clear();

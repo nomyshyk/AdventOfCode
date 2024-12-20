@@ -35,6 +35,14 @@ public class TestClassDay14 {
     }
 
     @Test
+    public void testSplitAndOrder(){
+        System.out.println(Day14.splitOrderMerge(List.of("..O...#...")));
+        System.out.println(Day14.splitOrderMerge(List.of("..O...O...")));
+        System.out.println(Day14.splitOrderMerge(List.of("..........")));
+        System.out.println(Day14.splitOrderMerge(List.of("##########")));
+    }
+
+    @Test
     public void calculateZerosTest() {
 
         assertEquals(Day14.calculateTotal(Pair.of(0, 0), 0, 10), 0);
