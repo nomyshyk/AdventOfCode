@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class Day14 {
 
     static List<List<String>> inputList = new ArrayList<>();
-    static Map<String, Integer> cacheHash = new HashMap<>();
+    static Map<List<List<String>>, Integer> cacheHash = new HashMap<>();
 
     static List<List<List<String>>> listOfMatrices = new ArrayList<>();
     public static Long executePart1(List<String> strList) {
@@ -40,7 +40,6 @@ public class Day14 {
         clear();
         inputList = parse2DList(strList);
 
-        String hashOfMatrix;
         int rotationN = 0;
         List<List<String>> updatedMatrix = new ArrayList<>(inputList);
         int firstAppearedAt = -1;
@@ -51,13 +50,12 @@ public class Day14 {
             updatedMatrix = new ArrayList<>(rotate(updatedMatrix));
             ++rotationN;
             //System.out.printf("Cycle %s \n", rotationN);
-            hashOfMatrix = generUniqueCode(updatedMatrix);
 
-            if(cacheHash.get(hashOfMatrix) != null) {
-                firstAppearedAt = cacheHash.getOrDefault(hashOfMatrix, 0);
+            if(cacheHash.get(updatedMatrix) != null) {
+                firstAppearedAt = cacheHash.getOrDefault(updatedMatrix, 0);
                 break;
             } else {
-                cacheHash.put(hashOfMatrix, rotationN);
+                cacheHash.put(updatedMatrix, rotationN);
                 listOfMatrices.add(new ArrayList<>(updatedMatrix));
             }
         }
@@ -111,7 +109,6 @@ public class Day14 {
             }
             result.add(list);
         }
-        //System.out.println(result);
         return result;
     }
 
@@ -147,11 +144,7 @@ public class Day14 {
         for(int i = 0; i < matrix.size(); i++){
             List<String> newStr = new ArrayList<>();
             for (int j = 0; j < matrix.get(i).size(); j++) {
-//                String old = matrix.get(i).get(j);
-//                int newI = matrix.get(0).size()-1 - j;
-//                int newJ = i;
                 newStr.add(matrix.get(matrix.get(0).size()-1 - j).get(i)); // cnt-clockwise
-                //newStr.add(matrix.get(matrix.get(0).size()-1 - i).get(matrix.get(0).size()-1 - j)); // reflect
             }
             rotatedMatrix.add(newStr);
         }
@@ -167,17 +160,6 @@ public class Day14 {
                     System.out.println();
                 }
         );
-    }
-
-    public static String generUniqueCode(List<List<String>> matrix1) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0 ; i< matrix1.size(); i++) {
-            for (int j = 0 ; j< matrix1.get(i).size(); j++){
-                stringBuilder.append(matrix1.get(i).get(j)).append(" ");
-            }
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
     }
 
     static void clear() {

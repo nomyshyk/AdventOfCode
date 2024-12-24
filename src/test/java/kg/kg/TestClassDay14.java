@@ -38,7 +38,7 @@ public class TestClassDay14 {
     @Test
     public void day14Part2_Test_2() {
         List<String> strList = FileLoader.inputLines("input_day14_p1_2.txt");
-        assertEquals(Day14.executePart2(strList), 83790L); 
+        assertEquals(Day14.executePart2(strList), 83790L);
     }
     @Test
     public void testSplitAndOrder(){
