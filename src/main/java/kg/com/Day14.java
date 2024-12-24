@@ -8,22 +8,19 @@ import java.util.stream.Collectors;
 public class Day14 {
 
     static List<List<String>> inputList = new ArrayList<>();
-    static Map<Integer, Integer> cacheHash = new HashMap<>();
+    static Map<String, Integer> cacheHash = new HashMap<>();
+
+    static List<List<List<String>>> listOfMatrices = new ArrayList<>();
     public static Long executePart1(List<String> strList) {
 
         clear();
         inputList = parse2DList(strList);
 
         long total = 0;
-        //printMatrix(cntClockRotate(inputList));
         List<List<String>> rotatedMatrix = cntClockRotate(inputList);
-        //System.out.println("res");
-        //printMatrix(rotatedMatrix);
         for (List<String> list: rotatedMatrix){
             List<String> s = splitOrderMerge(list);
             total += counter(s);
-            //System.out.println(s);
-            //System.out.println(total);
         }
 
         System.out.printf("Total is %s", total);
@@ -31,8 +28,6 @@ public class Day14 {
     }
 
     public static Long counter(List<String> list) {
-//        return list.stream().filter("O"::equals)
-//                .count() * index;
         long result = 0L;
         for(int i = 0; i < list.size(); i++) {
             if("O".equals(list.get(i))) {
@@ -45,43 +40,47 @@ public class Day14 {
         clear();
         inputList = parse2DList(strList);
 
-        //printMatrix(clockwiseRotateMatrix(inputList));
-//        //Should be eq
-//        System.out.println("should be eq");
-//        printMatrix(lists);
-//
-//        List<List<String>> updatedMatrix = rotate(inputList);
-
-        int hashOfMatrix = 0;
-        boolean notInCache = false;
+        String hashOfMatrix;
         int rotationN = 0;
         List<List<String>> updatedMatrix = new ArrayList<>(inputList);
+        int firstAppearedAt = -1;
 
-        while (!notInCache) {
-            updatedMatrix = rotate(updatedMatrix);
-            hashOfMatrix = updatedMatrix.hashCode();
+        int times = 1000000000;
+
+        while (rotationN < times) {
+            updatedMatrix = new ArrayList<>(rotate(updatedMatrix));
+            ++rotationN;
+            //System.out.printf("Cycle %s \n", rotationN);
+            hashOfMatrix = generUniqueCode(updatedMatrix);
+
             if(cacheHash.get(hashOfMatrix) != null) {
-                notInCache = true;
+                firstAppearedAt = cacheHash.getOrDefault(hashOfMatrix, 0);
+                break;
             } else {
-                cacheHash.put(hashOfMatrix, ++rotationN);
+                cacheHash.put(hashOfMatrix, rotationN);
+                listOfMatrices.add(new ArrayList<>(updatedMatrix));
             }
         }
 
-        System.out.printf("It copied after %s cycles \n", rotationN);
-        int additionalCycles = (1000000000 % rotationN);
-        System.out.printf("Rotate additional %s times \n", additionalCycles);
+        System.out.printf("It copied after %s cycles, firstAppear at %s \n", rotationN, firstAppearedAt);
 
-        for(int i = 0; i < additionalCycles; i++) {
-            updatedMatrix = rotate(updatedMatrix);
-        }
+        int additionalCycles =
+                firstAppearedAt == -1 ? rotationN :
+                (((times - firstAppearedAt) % (rotationN - firstAppearedAt))) + firstAppearedAt;
+        System.out.printf("Offset is %s \n", additionalCycles);
+
+        updatedMatrix = listOfMatrices.get(additionalCycles - 1);
+
+        //printMatrix(updatedMatrix);
 
         long total = 0;
+        int len = updatedMatrix.size();
         for (List<String> list: updatedMatrix){
-            //List<String> s = splitOrderMerge(list);
-            total += counter(list);
-            System.out.println(total);
+            total += list.stream().filter("O"::equals).count() * (len--);
+            //System.out.println(list + " " + (len+1) + " = " + (list.stream().filter("O"::equals).count() * (len+1)));
         }
 
+        System.out.printf("Total is %s", total);
         return total;
     }
 
@@ -89,16 +88,13 @@ public class Day14 {
         List<List<String>> origMatrix = new ArrayList<>(matrix);
         List<List<String>> updatedMatrix = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
-            System.out.printf("prepare rotation #%s \n", i);
-            printMatrix(origMatrix);
+
             origMatrix = cntClockRotate(origMatrix);
-            System.out.printf("after rotation #%s \n", i);
-            printMatrix(origMatrix);
+
             for (List<String> list: origMatrix){
                 updatedMatrix.add(splitOrderMerge(list));
             }
-            System.out.printf("after tilt #%s \n", i);
-            printMatrix(updatedMatrix);
+
             origMatrix = new ArrayList<>(updatedMatrix);
             updatedMatrix.clear();
         }
@@ -119,38 +115,6 @@ public class Day14 {
         return result;
     }
 
-    public static Long order(List<String> unorderedList) {
-        List<Pair<Integer, Integer>> stonePositions = new ArrayList<>();
-        List<Integer> counts = new ArrayList<>();
-        int lastStonePos = 0;
-        int cnt0 = 0;
-        for (int i = 0; i < unorderedList.size(); i++) {
-            if (unorderedList.get(i).equals("O")){
-               cnt0++;
-            }
-
-            if (unorderedList.get(i).equals("#") || (i == unorderedList.size()-1)) {
-                //System.out.printf("new pair %s and %s%n", lastStonePos, i);
-                stonePositions.add(Pair.of(((lastStonePos==0 && stonePositions.isEmpty()) ? 0 : lastStonePos + 1), i));
-                lastStonePos = i;
-                counts.add(cnt0);
-                cnt0 = 0;
-            }
-        }
-
-        // If empty use all range
-        if (stonePositions.isEmpty()) {
-            stonePositions.add(Pair.of(0, unorderedList.size() - 1));
-            counts.add(0);
-        }
-
-        long total = 0L;
-        for (int i = 0; i < stonePositions.size(); i++) {
-            total += calculateTotal(stonePositions.get(i), counts.get(i), unorderedList.size());
-        }
-        return total;
-    }
-
     public static List<String> splitOrderMerge(List<String> unorderedList) {
         return Arrays.stream(Arrays.stream(String.join("", unorderedList)
                         .split("#", -1))
@@ -167,7 +131,6 @@ public class Day14 {
                 .toList());
     }
 
-    //Counts
     public static long calculateTotal(Pair<Integer, Integer> border, int amtOfZeros, int totalLength) {
         Integer begin = border.getLeft();
 
@@ -177,43 +140,6 @@ public class Day14 {
             total += (totalLength - i);
         }
         return total;
-    }
-
-    public static List<List<String>> rotateMatrix(List<List<String>> matrix) {
-        List<List<String>> rotatedMatrix = new ArrayList<>();
-        for(int i = 0; i < matrix.get(1).size(); i++){
-            List<String> newStr = new ArrayList<>();
-            for (int j = 0; j < matrix.size(); j++) {
-                newStr.add(matrix.get(j).get(i));
-            }
-            rotatedMatrix.add(newStr);
-        }
-        return rotatedMatrix;
-    }
-
-    public static List<List<String>> reflectMatrix(List<List<String>> matrix) {
-        List<List<String>> rotatedMatrix = new ArrayList<>();
-        for(int i = 0; i < matrix.size(); i++){
-            List<String> newStr = new ArrayList<>();
-            for (int j = 0; j < matrix.get(i).size(); j++) {
-                newStr.add(matrix.get(i).get(matrix.get(0).size()-1 - j));
-            }
-            rotatedMatrix.add(newStr);
-        }
-        return rotatedMatrix;
-    }
-
-    public static List<List<String>> clockwiseRotateMatrix(List<List<String>> matrix) {
-        List<List<String>> rotatedMatrix = new ArrayList<>();
-        for(int i = 0; i < matrix.size(); i++){
-            List<String> newStr = new ArrayList<>();
-            for (int j = 0; j < matrix.get(i).size(); j++) {
-                //newStr.add(matrix.get(j).get(matrix.get(0).size()-1 - i)); --anti-clockwise
-                newStr.add(matrix.get(j).get(matrix.get(0).size()-1 - i));
-            }
-            rotatedMatrix.add(newStr);
-        }
-        return rotatedMatrix;
     }
 
     public static List<List<String>> cntClockRotate(List<List<String>> matrix) {
@@ -241,6 +167,17 @@ public class Day14 {
                     System.out.println();
                 }
         );
+    }
+
+    public static String generUniqueCode(List<List<String>> matrix1) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0 ; i< matrix1.size(); i++) {
+            for (int j = 0 ; j< matrix1.get(i).size(); j++){
+                stringBuilder.append(matrix1.get(i).get(j)).append(" ");
+            }
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 
     static void clear() {
