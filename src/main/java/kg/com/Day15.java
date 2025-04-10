@@ -25,13 +25,24 @@ public class Day15 {
     public static Long executePart2(List<String> strList) {
         clear();
         inputList = parseLine(strList);
-        Map<Long, LinkedHashSet<String>> linkedHashMap = new LinkedHashMap();
+        Map<Long, LinkedHashMap<String, Integer>> linkedHashMap = new LinkedHashMap();
         long sum = 0;
         for(String str : inputList) {
             ParsedVal parsedVal = splitCode(str);
             long boxNum = getSummaWord(parsedVal.code);
+            // EQUAL case
             if(parsedVal.oper.equals(Oper.EQUAL)) {
-                LinkedHashSet<String> boxLenses = linkedHashMap.get(boxNum);
+                LinkedHashMap<String, Integer> boxLenses = linkedHashMap.get(boxNum);
+                if(boxLenses == null) {
+                    // when box is empty just add lense
+                    boxLenses = new LinkedHashMap<>();
+                    boxLenses.put(parsedVal.code, parsedVal.number);
+                    linkedHashMap.put(boxNum, boxLenses);
+                } else {
+                    //when some value in the box
+                    //then look if is already presented
+                   // boxLenses.
+                }
             }
             System.out.println(parsedVal.code + " " + boxNum);
         }
