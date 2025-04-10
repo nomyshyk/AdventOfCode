@@ -39,4 +39,10 @@ public class TestClassDay15 {
     public void getSummaWord_Test() {
         assertEquals(52, Day15.getSummaWord("HASH"));
     }
+
+    @Test
+    public void day15Part2_Test_1() {
+        List<String> strList = FileLoader.inputLines("input_day15_p1_1.txt");
+        assertEquals(Day15.executePart2(strList), 145);
+    }
 }
