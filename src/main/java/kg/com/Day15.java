@@ -41,12 +41,24 @@ public class Day15 {
                 } else {
                     //when some value in the box
                     //then look if is already presented
-                   // boxLenses.
+                   boxLenses.put(parsedVal.code, parsedVal.number);
+                   linkedHashMap.put(boxNum, boxLenses);
+                }
+            } else {
+                // if MINUS then delete
+                LinkedHashMap<String, Integer> boxLenses = linkedHashMap.get(boxNum);
+                if(boxLenses != null) {
+                    //when some value in the box
+                    //then remove that value
+                    boxLenses.remove(parsedVal.code);
+                    linkedHashMap.put(boxNum, boxLenses);
                 }
             }
-            System.out.println(parsedVal.code + " " + boxNum);
         }
-        return 0L;
+        System.out.println(linkedHashMap);
+        long result = countPart2Total(linkedHashMap);
+        System.out.println(result);
+        return result;
     }
 
     static List<String> parseLine(List<String> strList) {
@@ -72,6 +84,19 @@ public class Day15 {
         }
         return new ParsedVal(split[0], Integer.parseInt(split[1]), Oper.EQUAL);
     }
+
+    static long countPart2Total(Map<Long, LinkedHashMap<String, Integer>> map) {
+        long lensesMulty = 0L;
+        for(Map.Entry<Long, LinkedHashMap<String, Integer>> boxes : map.entrySet()) {
+            long boxIdx = boxes.getKey() + 1;
+            int idx = 0;
+            for(Map.Entry<String, Integer> lenses : boxes.getValue().entrySet()) {
+                lensesMulty += (++idx) * lenses.getValue() * boxIdx;
+            }
+        }
+        return lensesMulty;
+    }
+
     static void clear() {
         inputList.clear();
     }

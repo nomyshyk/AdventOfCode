@@ -45,4 +45,10 @@ public class TestClassDay15 {
         List<String> strList = FileLoader.inputLines("input_day15_p1_1.txt");
         assertEquals(Day15.executePart2(strList), 145);
     }
+
+    @Test
+    public void day15Part2_Test_2() {
+        List<String> strList = FileLoader.inputLines("input_day15_p1_2.txt");
+        assertEquals(Day15.executePart2(strList), 269410);
+    }
 }
